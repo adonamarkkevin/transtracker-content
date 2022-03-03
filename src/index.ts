@@ -11,7 +11,7 @@ declare module "express" {
 }
 
 createConnection()
-	.then(async (connection) => {
+	.then(async () => {
 		const app = express();
 
 		process.env.TZ = "Asia/Manila";
@@ -74,4 +74,7 @@ createConnection()
 			console.log(`server started on localhost:${process.env.PORT}`);
 		});
 	})
-	.catch((error) => console.log("TypeORM connection error: ", error));
+	.catch((error) => {
+		console.log("TypeORM connection error: ", error);
+		process.exit(0);
+	});
