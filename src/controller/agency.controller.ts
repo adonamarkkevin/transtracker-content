@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getRepository } from "typeorm";
-import { Agency } from "../entity/Agency";
-import { AgencyType } from "../entity/AgencyType";
+import { Agency } from "../entity/Agency.entity";
+import { AgencyType } from "../entity/AgencyType.entity";
 
 // Paginate function
 const paginateResponse = (data: any, page: any, limit: any) => {
@@ -46,7 +46,7 @@ export const agencyTypeCreate = async (req: Request, res: Response) => {
 
 		return res.send(agencyToCreate);
 	} catch (error) {
-		console.error(error);
+		console.log(error);
 		return res.status(500).send(`Server error`);
 	}
 };
@@ -55,20 +55,18 @@ export const agencyToDelete = async (req: Request, res: Response) => {
 	const agencyRepo = getRepository(Agency);
 
 	try {
-		let agencyToDelete = await agencyRepo.findOne({
+		let agencyToDelete = await agencyRepo.findOneOrFail({
 			where: { id: req.params.agencyId },
+			relations: ["status"],
 		});
 
 		if (!agencyToDelete) {
 			return res.status(404).json({ error: "Agency not found" });
 		}
 
-		agencyRepo
-			.createQueryBuilder("agency")
-			.where("agency.id = agency_id", { agency_id: req.params.agencyId })
-			.softDelete();
+		await agencyRepo.softRemove(agencyToDelete);
 
-		return res.send(`${agencyToDelete.name} deleted`);
+		return res.send(`agency has been deleted`);
 	} catch (error) {
 		console.error(error);
 		return res.status(500).send(`Server error`);
@@ -76,19 +74,40 @@ export const agencyToDelete = async (req: Request, res: Response) => {
 };
 
 export const getAllAgencies = async (req: Request, res: Response) => {
+	const agencyRepo = getRepository(Agency);
+
 	try {
-		const agencyRepo = getRepository(Agency);
 		const take: any = req.query.take || 10;
 		const page: any = req.query.page || 1;
 		const skip = (page - 1) * take;
 
 		const allAgency = await agencyRepo.findAndCount({
-			relations: ["agency_type"],
+			relations: ["agency_type", "email", "sms"],
 			take: take,
 			skip: skip,
 		});
 
 		return res.send(paginateResponse(allAgency, page, take));
+	} catch (error) {
+		console.error(error);
+		return res.status(500).send(`Server error`);
+	}
+};
+
+export const getAgency = async (req: Request, res: Response) => {
+	const agencyRepo = getRepository(Agency);
+
+	try {
+		let foundAgency = await agencyRepo.findOne({
+			where: { id: req.params.agencyId },
+			relations: ["agency_type", "email", "sms"],
+		});
+
+		if (!foundAgency) {
+			return res.status(404).json({ error: "Agency not found" });
+		}
+
+		return res.send(foundAgency);
 	} catch (error) {
 		console.error(error);
 		return res.status(500).send(`Server error`);

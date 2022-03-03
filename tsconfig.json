@@ -1,10 +1,12 @@
 {
 	"compilerOptions": {
+		"skipLibCheck": true,
 		"lib": ["es5", "es6"],
-		"target": "es5",
+		"esModuleInterop": true,
+		"target": "es6",
 		"module": "commonjs",
 		"moduleResolution": "node",
-		"outDir": "./build",
+		"outDir": "./dist",
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"sourceMap": true

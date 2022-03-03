@@ -1,7 +1,8 @@
+const cors = require("cors");
 import "reflect-metadata";
+import express, { Request, Response, NextFunction, json } from "express";
 import { createConnection } from "typeorm";
-import cors from "cors";
-const express = require("express");
+import { jwt_checking, admin_check } from "./middleware/auth";
 
 declare module "express" {
 	export interface Request {
@@ -38,12 +39,39 @@ createConnection()
 			credentials: true,
 			exposedHeaders: ["set-cookie"],
 		};
+		app.use(express.json());
 
 		app.use(cors(corsOpts));
+
+		const { AppRoutes } = await import("./routes");
+
+		AppRoutes.forEach((route) => {
+			let jwt_except = [
+				/// place all api that need to be excluded on jwtchecking
+			];
+
+			if (jwt_except.indexOf(route.path) > -1) {
+				app[route.method](
+					route.path,
+					(request: Request, response: Response) => {
+						route.action(request, response);
+					}
+				);
+			}
+
+			app[route.method](
+				route.path,
+				// [jwt_checking],
+				// [admin_check]
+				(request: Request, response: Response) => {
+					route.action(request, response);
+				}
+			);
+		});
 
 		// run app
 		app.listen(parseInt(process.env.PORT), () => {
 			console.log(`server started on localhost:${process.env.PORT}`);
 		});
 	})
-	.catch((error) => console.log(error));
+	.catch((error) => console.log("TypeORM connection error: ", error));

@@ -8,7 +8,7 @@ import {
 	DeleteDateColumn,
 	OneToOne,
 } from "typeorm";
-import { Agency } from "./Agency";
+import { Agency } from "./Agency.entity";
 
 @Entity({ name: "agency_type" })
 export class AgencyType extends BaseEntity {

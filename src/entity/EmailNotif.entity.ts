@@ -6,7 +6,11 @@ import {
 	CreateDateColumn,
 	UpdateDateColumn,
 	DeleteDateColumn,
+	ManyToOne,
+	JoinColumn,
 } from "typeorm";
+import { Agency } from "./Agency.entity";
+import { Status } from "./Status.entity";
 
 @Entity({ name: "email_notif" })
 export class EmailNotif extends BaseEntity {
@@ -27,4 +31,11 @@ export class EmailNotif extends BaseEntity {
 
 	@DeleteDateColumn()
 	deleted_at: Date;
+
+	@ManyToOne(() => Status, (status) => status.email, { cascade: true })
+	@JoinColumn()
+	status: Status;
+
+	@ManyToOne(() => Agency, (agency) => agency.email, { cascade: true })
+	agency: Agency;
 }
