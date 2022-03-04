@@ -28,6 +28,8 @@ export const createNotif = async (req: Request, res: Response) => {
 	let emailId = `DICT-${year}-${month}-${nnn}-${aaa}-EN-${sn}`;
 	let smsId = `DICT-${year}-${month}-${nnn}-${aaa}-SN-${sn}`;
 
+	let notif = req.body.notif;
+
 	try {
 		let agencyFound = await agencyRepo.findOne({
 			where: { id: req.body.agencyId },
@@ -37,33 +39,40 @@ export const createNotif = async (req: Request, res: Response) => {
 			return res.status(404).json({ error: "Agency not found" });
 		}
 
-		let statusToAdd = statusRepo.create({
-			status_id: statusId,
-			batch_id: batchId,
-			status: req.body.status,
-			mapping: req.body.mapping,
-			agency: agencyFound,
-		});
+		let statusArr = [];
+		let emailArr = [];
+		let smsArr = [];
 
-		await statusRepo.save(statusToAdd);
+		for (let i = 0; i < notif.length; i++) {
+			let statusToAdd = statusRepo.create({
+				status_id: statusId,
+				batch_id: batchId,
+				status: notif[i].status,
+				mapping: notif[i].mapping,
+				agency: agencyFound,
+			});
 
-		let emailToAdd = emailRepo.create({
-			email_id: emailId,
-			notification: req.body.email,
-			status: statusToAdd,
-			agency: agencyFound,
-		});
+			let emailToAdd = emailRepo.create({
+				email_id: emailId,
+				notification: notif[i].email,
+				status: statusToAdd,
+				agency: agencyFound,
+			});
 
-		await emailRepo.save(emailToAdd);
+			let smsToAdd = smsRepo.create({
+				sms_id: smsId,
+				notification: notif[i].sms,
+				status: statusToAdd,
+				agency: agencyFound,
+			});
+			statusArr.push(statusToAdd);
+			emailArr.push(emailToAdd);
+			smsArr.push(smsToAdd);
+		}
 
-		let smsToAdd = smsRepo.create({
-			sms_id: smsId,
-			notification: req.body.sms,
-			status: statusToAdd,
-			agency: agencyFound,
-		});
-
-		await smsRepo.save(smsToAdd);
+		await statusRepo.save(statusArr);
+		await emailRepo.save(emailArr);
+		await smsRepo.save(smsArr);
 
 		return res.send("ok");
 	} catch (error) {
