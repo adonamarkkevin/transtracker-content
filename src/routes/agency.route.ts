@@ -3,6 +3,7 @@ import {
 	agencyToDelete,
 	getAllAgencies,
 	getAgency,
+	updateAgency,
 } from "../controller/agency.controller";
 
 export const agencyRoutes: {
@@ -29,5 +30,10 @@ export const agencyRoutes: {
 		path: "/api/v1/transtracker-content/agency/get-agency/:agencyId",
 		method: "get",
 		action: getAgency,
+	},
+	{
+		path: "/api/v1/transtracker-content/agency/update-agency/:agencyId",
+		method: "put",
+		action: updateAgency,
 	},
 ];

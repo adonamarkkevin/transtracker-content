@@ -22,7 +22,7 @@ let sn = Math.floor(Math.random() * 90 + 10);
 // Controllers
 export const createNotif = async (req: Request, res: Response) => {
 	let statusNum = await statusRepo.find();
-	let nnn = String(statusNum.length + 1).padStart(4, "0");
+	let nnn = String(statusNum.length + 1).padStart(3, "0");
 	let statusId = `DICT-${year}-${month}-${nnn}-${aaa}`;
 	let batchId = `DICT-${year}-${month}-${nnn}`;
 	let emailId = `DICT-${year}-${month}-${nnn}-${aaa}-EN-${sn}`;

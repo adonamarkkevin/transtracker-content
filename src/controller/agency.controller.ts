@@ -20,10 +20,11 @@ const paginateResponse = (data: any, page: any, limit: any) => {
 	};
 };
 
-export const agencyTypeCreate = async (req: Request, res: Response) => {
-	const agencyRepo = getRepository(Agency);
-	const agencyTypeRepo = getRepository(AgencyType);
+// Entity Repo
+const agencyRepo = getRepository(Agency);
+const agencyTypeRepo = getRepository(AgencyType);
 
+export const agencyTypeCreate = async (req: Request, res: Response) => {
 	try {
 		const agencyToCreate = agencyRepo.create({
 			name: req.body.agencyName,
@@ -52,8 +53,6 @@ export const agencyTypeCreate = async (req: Request, res: Response) => {
 };
 
 export const agencyToDelete = async (req: Request, res: Response) => {
-	const agencyRepo = getRepository(Agency);
-
 	try {
 		let agencyToDelete = await agencyRepo.findOneOrFail({
 			where: { id: req.params.agencyId },
@@ -74,8 +73,6 @@ export const agencyToDelete = async (req: Request, res: Response) => {
 };
 
 export const getAllAgencies = async (req: Request, res: Response) => {
-	const agencyRepo = getRepository(Agency);
-
 	try {
 		const take: any = req.query.take || 10;
 		const page: any = req.query.page || 1;
@@ -95,8 +92,6 @@ export const getAllAgencies = async (req: Request, res: Response) => {
 };
 
 export const getAgency = async (req: Request, res: Response) => {
-	const agencyRepo = getRepository(Agency);
-
 	try {
 		let foundAgency = await agencyRepo.findOne({
 			where: { id: req.params.agencyId },
@@ -106,6 +101,41 @@ export const getAgency = async (req: Request, res: Response) => {
 		if (!foundAgency) {
 			return res.status(404).json({ error: "Agency not found" });
 		}
+
+		return res.send(foundAgency);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).send(`Server error`);
+	}
+};
+
+export const updateAgency = async (req: Request, res: Response) => {
+	try {
+		let foundAgency = await agencyRepo.findOne({
+			where: { id: req.params.agencyId },
+		});
+
+		if (!foundAgency) {
+			return res.status(404).json({ error: "Agency not found" });
+		}
+
+		foundAgency.name = req.body.agencyName;
+		foundAgency.type = req.body.agencyType;
+		foundAgency.mnemonic = req.body.mnemonic;
+
+		if (foundAgency.type == "localized") {
+			let foundAgencyType = await agencyTypeRepo.findOne({
+				where: { agency: foundAgency },
+			});
+
+			foundAgencyType.region = req.body.region;
+			foundAgencyType.province = req.body.province;
+			foundAgencyType.municipality = req.body.municipality;
+
+			await agencyTypeRepo.save(foundAgencyType);
+		}
+
+		await agencyRepo.save(foundAgency);
 
 		return res.send(foundAgency);
 	} catch (error) {
