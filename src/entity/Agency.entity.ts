@@ -38,11 +38,13 @@ export class Agency extends BaseEntity {
 	@DeleteDateColumn()
 	deleted_at: Date;
 
-	@OneToOne(() => AgencyType, (agency_type) => agency_type.agency)
+	@OneToOne(() => AgencyType, (agency_type) => agency_type.agency, {
+		cascade: true,
+	})
 	@JoinColumn()
 	agency_type: AgencyType;
 
-	@OneToMany(() => Status, (status) => status.agency)
+	@OneToMany(() => Status, (status) => status.agency, { cascade: true })
 	@JoinColumn()
 	status: Status[];
 

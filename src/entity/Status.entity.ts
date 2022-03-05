@@ -39,12 +39,12 @@ export class Status extends BaseEntity {
 	@DeleteDateColumn()
 	deleted_at: Date;
 
-	@ManyToOne(() => Agency, (agency) => agency.status, { cascade: true })
+	@ManyToOne(() => Agency, (agency) => agency.status)
 	agency: Agency;
 
-	@OneToMany(() => EmailNotif, (email) => email.status)
+	@OneToMany(() => EmailNotif, (email) => email.status, { cascade: true })
 	email: EmailNotif[];
 
-	@OneToMany(() => SmsNotif, (sms) => sms.status)
+	@OneToMany(() => SmsNotif, (sms) => sms.status, { cascade: true })
 	sms: SmsNotif[];
 }

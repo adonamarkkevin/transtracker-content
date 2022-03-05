@@ -32,7 +32,7 @@ export class SmsNotif extends BaseEntity {
 	@DeleteDateColumn()
 	deleted_at: Date;
 
-	@ManyToOne(() => Status, (status) => status.sms, { cascade: true })
+	@ManyToOne(() => Status, (status) => status.sms)
 	@JoinColumn()
 	status: Status;
 

@@ -19,6 +19,14 @@ let month = date.getMonth();
 let aaa = Math.floor(Math.random() * (999 - 100 + 1) + 100);
 let sn = Math.floor(Math.random() * 90 + 10);
 
+// Query builder
+
+let statusQuery = async () => {
+	return await statusRepo.find({
+		relations: ["email", "sms"],
+	});
+};
+
 // Controllers
 export const createNotif = async (req: Request, res: Response) => {
 	let statusNum = await statusRepo.find();
@@ -28,7 +36,7 @@ export const createNotif = async (req: Request, res: Response) => {
 	let emailId = `DICT-${year}-${month}-${nnn}-${aaa}-EN-${sn}`;
 	let smsId = `DICT-${year}-${month}-${nnn}-${aaa}-SN-${sn}`;
 
-	let notif = req.body.notif;
+	const notif = req.body.notif;
 
 	try {
 		let agencyFound = await agencyRepo.findOne({
@@ -40,8 +48,6 @@ export const createNotif = async (req: Request, res: Response) => {
 		}
 
 		let statusArr = [];
-		let emailArr = [];
-		let smsArr = [];
 
 		for (let i = 0; i < notif.length; i++) {
 			let statusToAdd = statusRepo.create({
@@ -50,31 +56,27 @@ export const createNotif = async (req: Request, res: Response) => {
 				status: notif[i].status,
 				mapping: notif[i].mapping,
 				agency: agencyFound,
-			});
-
-			let emailToAdd = emailRepo.create({
-				email_id: emailId,
-				notification: notif[i].email,
-				status: statusToAdd,
-				agency: agencyFound,
-			});
-
-			let smsToAdd = smsRepo.create({
-				sms_id: smsId,
-				notification: notif[i].sms,
-				status: statusToAdd,
-				agency: agencyFound,
+				email: [
+					{
+						email_id: emailId,
+						notification: notif[i].email,
+						agency: agencyFound,
+					},
+				],
+				sms: [
+					{
+						sms_id: smsId,
+						notification: notif[i].sms,
+						agency: agencyFound,
+					},
+				],
 			});
 			statusArr.push(statusToAdd);
-			emailArr.push(emailToAdd);
-			smsArr.push(smsToAdd);
 		}
 
-		await statusRepo.save(statusArr);
-		await emailRepo.save(emailArr);
-		await smsRepo.save(smsArr);
+		// console.log("--------->", statusArr);
 
-		return res.send("ok");
+		return res.send(await statusRepo.save(statusArr));
 	} catch (error) {
 		console.error(error);
 		return res.status(500).send(`Server error`);

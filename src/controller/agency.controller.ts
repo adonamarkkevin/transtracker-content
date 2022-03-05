@@ -79,7 +79,7 @@ export const getAllAgencies = async (req: Request, res: Response) => {
 		const skip = (page - 1) * take;
 
 		const allAgency = await agencyRepo.findAndCount({
-			relations: ["agency_type", "email", "sms"],
+			relations: ["agency_type", "email", "sms", "status"],
 			take: take,
 			skip: skip,
 		});

@@ -32,7 +32,7 @@ export class EmailNotif extends BaseEntity {
 	@DeleteDateColumn()
 	deleted_at: Date;
 
-	@ManyToOne(() => Status, (status) => status.email, { cascade: true })
+	@ManyToOne(() => Status, (status) => status.email)
 	@JoinColumn()
 	status: Status;
 
