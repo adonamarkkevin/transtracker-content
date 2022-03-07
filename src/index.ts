@@ -51,27 +51,26 @@ createConnection()
 			];
 
 			if (jwt_except.indexOf(route.path) > -1) {
-				app[route.method](
-					route.path,
-					(request: Request, response: Response) => {
-						route.action(request, response);
-					}
-				);
+				app[route.method](route.path, (req: Request, res: Response) => {
+					route.action(req, res);
+				});
 			}
 
 			app[route.method](
 				route.path,
 				// [jwt_checking],
 				// [admin_check]
-				(request: Request, response: Response) => {
-					route.action(request, response);
+				(req: Request, res: Response) => {
+					route.action(req, res);
 				}
 			);
 		});
 
+		const PORT = process.env.PORT || 9004;
+
 		// run app
-		app.listen(parseInt(process.env.PORT), () => {
-			console.log(`server started on localhost:${process.env.PORT}`);
+		app.listen(PORT, () => {
+			console.log(`server started on localhost:${PORT}`);
 		});
 	})
 	.catch((error) => {
