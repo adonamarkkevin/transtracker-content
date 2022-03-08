@@ -24,6 +24,8 @@ export const createWorkgroup = async (req: Request, res: Response) => {
 		});
 
 		await workgroupRepo.save(workgroupToAdd);
+
+		return res.send(workgroupToAdd);
 	} catch (error) {
 		console.error(error);
 		return res.status(500).send(`Server error`);
@@ -46,19 +48,14 @@ export const getAllWorkgroup = async (req: Request, res: Response) => {
 export const getWorkgroup = async (req: Request, res: Response) => {
 	try {
 		let foundWorkgroup = await workgroupRepo.findOne({
-			where: { name: req.body.workgroup },
+			where: { id: req.params.workgroupId },
 		});
 
 		if (!foundWorkgroup) {
 			return res.status(404).send(`Workgroup not found`);
 		}
 
-		return res.send(
-			await workgroupRepo.findOne({
-				where: { id: req.params.workgroupId },
-				relations: ["agency"],
-			})
-		);
+		return res.send(foundWorkgroup);
 	} catch (error) {
 		console.error(error);
 		return res.status(500).send(`Server error`);
