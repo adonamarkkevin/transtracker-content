@@ -30,7 +30,7 @@ export const createWorkgroup = async (req: Request, res: Response) => {
 	}
 };
 
-export const getAllworkgroup = async (req: Request, res: Response) => {
+export const getAllWorkgroup = async (req: Request, res: Response) => {
 	try {
 		return res.send(
 			await workgroupRepo.find({
