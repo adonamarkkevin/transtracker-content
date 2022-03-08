@@ -2,23 +2,7 @@ import { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { Agency } from "../entity/Agency.entity";
 import { AgencyType } from "../entity/AgencyType.entity";
-
-// Paginate function
-const paginateResponse = (data: any, page: any, limit: any) => {
-	const [result, total] = data;
-	const lastPage = Math.ceil(total / Number(limit));
-	const nextPage = Number(page) + 1 > lastPage ? null : Number(page) + 1;
-	const prevPage = Number(page) - 1 < 1 ? null : Number(page) - 1;
-	return {
-		data: [...result],
-		count: total,
-		perPage: Number(limit),
-		currentPage: Number(page),
-		nextPage: nextPage,
-		prevPage: prevPage,
-		lastPage: lastPage,
-	};
-};
+import { paginateResponse } from "../helper/paginate.helper";
 
 // Entity Repo
 const agencyRepo = getRepository(Agency);
