@@ -4,13 +4,13 @@ import {
 	getWorkgroup,
 } from "../controller/workgroup.controller";
 
-export const statusRoutes: {
+export const workgroupRoutes: {
 	path: string;
 	method: string;
 	action: any;
 }[] = [
 	{
-		path: "/api/v1/transtracker-content/workgroup/create-workgroup/:statusId",
+		path: "/api/v1/transtracker-content/workgroup/create-workgroup",
 		method: "post",
 		action: createWorkgroup,
 	},
