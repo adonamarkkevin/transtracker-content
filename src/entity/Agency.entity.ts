@@ -9,11 +9,13 @@ import {
 	OneToOne,
 	JoinColumn,
 	OneToMany,
+	ManyToOne,
 } from "typeorm";
 import { AgencyType } from "./AgencyType.entity";
 import { EmailNotif } from "./EmailNotif.entity";
 import { SmsNotif } from "./SmsNotif.entity";
 import { Status } from "./Status.entity";
+import { Workgroup } from "./Workgroup.entity";
 
 @Entity({ name: "agencies" })
 export class Agency extends BaseEntity {
@@ -55,4 +57,7 @@ export class Agency extends BaseEntity {
 	@OneToMany(() => SmsNotif, (sms) => sms.agency)
 	@JoinColumn()
 	sms: SmsNotif[];
+
+	@ManyToOne(() => Workgroup, (workgroup) => workgroup.agency)
+	workgroup: Workgroup;
 }
