@@ -11,6 +11,7 @@ const agencyTypeRepo = getRepository(AgencyType);
 export const agencyTypeCreate = async (req: Request, res: Response) => {
 	try {
 		const agencyToCreate = agencyRepo.create({
+			agency_id: req.body.agencyId,
 			name: req.body.agencyName,
 			mnemonic: req.body.mnemonic,
 			type: req.body.agencyType,
