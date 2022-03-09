@@ -23,6 +23,9 @@ export class Agency extends BaseEntity {
 	id: number;
 
 	@Column()
+	agency_id: String;
+
+	@Column()
 	name: String;
 
 	@Column()
