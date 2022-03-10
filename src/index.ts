@@ -1,4 +1,5 @@
 const cors = require("cors");
+import { connect } from "mongoose";
 import "reflect-metadata";
 import express, { Request, Response, NextFunction, json } from "express";
 import { createConnection } from "typeorm";
@@ -42,6 +43,10 @@ createConnection()
 		app.use(express.json());
 
 		app.use(cors(corsOpts));
+
+		await connect(
+			`mongodb+srv://<username>:<password>@cluster0.j9bg4.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
+		);
 
 		const { AppRoutes } = await import("./routes");
 
