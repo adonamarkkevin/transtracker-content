@@ -46,6 +46,7 @@ export const createNotif = async (req: Request, res: Response) => {
 			agency_id: req.body.agencyId,
 			mnemonic: req.body.mnemonic,
 			type: req.body.agencyType,
+			workgroup: req.body.workgroupId,
 		});
 
 		await agencyRepo.save(agencyToCreate);
