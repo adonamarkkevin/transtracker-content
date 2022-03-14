@@ -4,10 +4,12 @@ import { EmailNotif } from "../entity/EmailNotif.entity";
 import { SmsNotif } from "../entity/SmsNotif.entity";
 import { getRepository } from "typeorm";
 import { Agency } from "../entity/Agency.entity";
+import { AgencyType } from "../entity/AgencyType.entity";
 
 // Entity Repository
 const agencyRepo = getRepository(Agency);
 const statusRepo = getRepository(Status);
+const agencyTypeRepo = getRepository(AgencyType);
 const emailRepo = getRepository(EmailNotif);
 const smsRepo = getRepository(SmsNotif);
 
@@ -39,12 +41,23 @@ export const createNotif = async (req: Request, res: Response) => {
 	const notif = req.body.notif;
 
 	try {
-		let agencyFound = await agencyRepo.findOne({
-			where: { id: req.body.agencyId },
+		const agencyToCreate = agencyRepo.create({
+			name: req.body.agencyName,
+			mnemonic: req.body.mnemonic,
+			type: req.body.agencyType,
 		});
 
-		if (!agencyFound) {
-			return res.status(404).json({ error: "Agency not found" });
+		await agencyRepo.save(agencyToCreate);
+
+		if (agencyToCreate.type === "localized") {
+			const agencyTypeToCreate = agencyTypeRepo.create({
+				region: req.body.region,
+				province: req.body.province,
+				municipality: req.body.municipality,
+				agency: agencyToCreate,
+			});
+
+			await agencyTypeRepo.save(agencyTypeToCreate);
 		}
 
 		let statusArr = [];
@@ -55,19 +68,19 @@ export const createNotif = async (req: Request, res: Response) => {
 				batch_id: batchId,
 				status: notif[i].status,
 				mapping: notif[i].mapping,
-				agency: agencyFound,
+				agency: agencyToCreate,
 				email: [
 					{
 						email_id: emailId,
 						notification: notif[i].email,
-						agency: agencyFound,
+						agency: agencyToCreate,
 					},
 				],
 				sms: [
 					{
 						sms_id: smsId,
 						notification: notif[i].sms,
-						agency: agencyFound,
+						agency: agencyToCreate,
 					},
 				],
 			});
@@ -75,8 +88,9 @@ export const createNotif = async (req: Request, res: Response) => {
 		}
 
 		// console.log("--------->", statusArr);
+		await statusRepo.save(statusArr);
 
-		return res.send(await statusRepo.save(statusArr));
+		return res.send(`ok`);
 	} catch (error) {
 		console.error(error);
 		return res.status(500).send(`Server error`);
