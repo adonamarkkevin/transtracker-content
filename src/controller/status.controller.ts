@@ -41,6 +41,39 @@ export const createNotif = async (req: Request, res: Response) => {
 	const notif = req.body.notif;
 
 	try {
+		let agencyFound = await agencyRepo.findOne({
+			where: { agency_id: req.body.agencyId },
+		});
+
+		if (agencyFound) {
+			let statusArr = [];
+
+			for (let i = 0; i < notif.length; i++) {
+				let statusToAdd = statusRepo.create({
+					status_id: statusId,
+					batch_id: batchId,
+					status: notif[i].status,
+					mapping: notif[i].mapping,
+					agency: agencyFound,
+					email: [
+						{
+							email_id: emailId,
+							notification: notif[i].email,
+							agency: agencyFound,
+						},
+					],
+					sms: [
+						{
+							sms_id: smsId,
+							notification: notif[i].sms,
+							agency: agencyFound,
+						},
+					],
+				});
+				statusArr.push(statusToAdd);
+			}
+		}
+
 		const agencyToCreate = agencyRepo.create({
 			name: req.body.agencyName,
 			agency_id: req.body.agencyId,
