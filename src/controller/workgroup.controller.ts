@@ -5,7 +5,6 @@ import { getRepository } from "typeorm";
 import { resolve } from "url";
 
 // Entity Repo
-const agencyRepo = getRepository(Agency);
 const workgroupRepo = getRepository(Workgroup);
 
 // Controller

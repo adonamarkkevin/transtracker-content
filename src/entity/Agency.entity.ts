@@ -62,5 +62,6 @@ export class Agency extends BaseEntity {
 	sms: SmsNotif[];
 
 	@ManyToOne(() => Workgroup, (workgroup) => workgroup.agency)
+	@JoinColumn()
 	workgroup: Workgroup;
 }
