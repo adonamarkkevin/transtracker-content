@@ -43,6 +43,7 @@ export const createNotif = async (req: Request, res: Response) => {
 	try {
 		const agencyToCreate = agencyRepo.create({
 			name: req.body.agencyName,
+			agency_id: req.body.agencyId,
 			mnemonic: req.body.mnemonic,
 			type: req.body.agencyType,
 		});
